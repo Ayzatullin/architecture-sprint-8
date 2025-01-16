@@ -18,10 +18,22 @@ const ReportPage: React.FC = () => {
 
       const response = await fetch(`${process.env.REACT_APP_API_URL}/reports`, {
         headers: {
-          'Authorization': `Bearer ${keycloak.token}`
+          'Authorization': `Bearer ${keycloak.token}`,
         }
       });
 
+      if (!response.ok) {
+        throw new Error('Failed to download report');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'report.txt';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
       
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
